@@ -19,11 +19,21 @@ main{max-width:1180px;margin:0 auto;padding:14px 14px 44px}
 .col>.card{margin-bottom:26px}
 @media (min-width:780px){main{padding:18px 24px 48px}.layout{grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:0 24px;align-items:start}h1{font-size:2.8rem}}
 em{font-style:normal;color:var(--a)}
-.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border-radius:999px;padding:7px 7px 7px 18px;box-shadow:0 6px 20px rgba(60,40,20,.06);margin-bottom:12px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border-radius:999px;padding:9px 18px;box-shadow:0 6px 20px rgba(60,40,20,.06);margin-bottom:12px}
 .logo{font-weight:700;font-size:1.05rem}.logo i{font-style:normal;color:var(--a)}
-.mon{background:var(--a);color:#fff;border:0;border-radius:999px;padding:9px 14px;font:inherit;font-weight:600;width:auto;min-width:0}
-.mon::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer}
-.hero{background:var(--hero);border-radius:28px;padding:28px 20px 22px;margin-bottom:26px}
+.navmeta{font-size:.72rem;color:var(--mut);font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+.hero{background:var(--hero);border-radius:28px;padding:24px 20px 22px;margin-bottom:26px}
+.hero-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.hero-heading h1{margin-top:0}.hero-heading p{margin-bottom:0}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+.period-status{margin:0;padding:6px 10px;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase}
+.period-status.open{--k2:var(--ok)}.period-status.closed{--k2:var(--mut)}
+.period-row{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:9px;align-items:stretch;margin:20px 0 16px}
+.period-arrow{width:46px;height:46px;padding:0;border-radius:15px;background:var(--card);font-size:1.55rem;line-height:1;color:var(--a);box-shadow:0 4px 12px rgba(60,40,20,.05)}
+.period-current{position:relative;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border-radius:15px;padding:8px 14px;box-shadow:0 4px 12px rgba(60,40,20,.05);cursor:pointer;overflow:hidden}
+.period-copy{display:grid;min-width:0}.period-caption{font-size:.66rem;color:var(--mut);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.period-name{font-size:1.12rem;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.period-hint{font-size:.72rem;color:var(--mut);white-space:nowrap}.mon{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 .hero .k{font-size:.85rem;color:var(--mut);font-weight:500}
 h1{font-size:2.3rem;line-height:1.05;letter-spacing:-.03em;font-weight:700;margin:6px 0 10px}
 .hero p{margin:0 0 20px;color:var(--mut);font-size:.95rem;max-width:34ch}
@@ -95,20 +105,31 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
 button:disabled,input:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:520px){.hero-heading{display:block}.hero-actions{flex-direction:row;align-items:center;justify-content:space-between;margin-top:12px}.period-row{margin-top:15px}.period-hint{font-size:.68rem}}
 </style>
 </head>
 <body>
 <main>
 <nav class="nav">
   <span class="logo">Hogar<i>.</i></span>
-  <input type="month" id="mon" class="mon" aria-label="Mes">
+  <span class="navmeta">Gastos compartidos</span>
 </nav>
 
 <div class="layout"><div class="col">
 <section class="hero">
-  <div class="k" id="hl"></div>
-  <h1>Gastos del <em>hogar</em>.</h1>
-  <p id="who">Servicios del mes, repartidos entre ustedes.</p>
+  <div class="hero-heading">
+    <div><h1>Gastos del <em>hogar</em>.</h1><p id="who">Servicios del mes, repartidos entre ustedes.</p></div>
+    <div class="hero-actions"><span class="badge period-status open" id="lockb">Mes abierto</span><button class="p" id="closeMonth" style="display:none">Cerrar mes</button></div>
+  </div>
+  <div class="period-row" aria-label="Navegación de mes">
+    <button class="period-arrow" id="prevMonth" type="button" aria-label="Mes anterior">‹</button>
+    <label class="period-current" aria-label="Seleccionar mes">
+      <span class="period-copy"><span class="period-caption">Mes en revisión</span><strong class="period-name" id="hl"></strong></span>
+      <span class="period-hint">Elegir mes⌄</span>
+      <input type="month" id="mon" class="mon" aria-label="Elegir mes">
+    </label>
+    <button class="period-arrow" id="nextMonth" type="button" aria-label="Mes siguiente">›</button>
+  </div>
   <div class="stats">
     <div><b id="net"></b><span>Gasto real</span></div>
     <div><b id="est1"></b><span>Estimado</span></div>
@@ -118,7 +139,6 @@ button:disabled,input:disabled{opacity:.55;cursor:not-allowed}
   <p class="fine" id="pgt"></p>
   <p class="fine" id="gross" style="margin-top:4px"></p>
   <p class="fine" id="st" style="margin-top:4px">Servicios del mes, en soles.</p>
-  <div style="margin-top:12px"><span class="badge" id="lockb" style="--k2:var(--b);display:none;margin:0">Mes cerrado · solo lectura</span><button class="p" id="closeMonth" style="display:none">Cerrar mes</button></div>
 </section>
 
 <section class="sec">
@@ -194,10 +214,33 @@ let M=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
 const $=id=>document.getElementById(id);
 const OKT="Guardado automático en este enlace.";
 let DBR=null,EX=false;
-function clean(){return JSON.parse(JSON.stringify({n1:S.n1,n2:S.n2,pct:S.pct,pctSet:!!S.pctSet,items:S.items,pays:S.pays,settled:S.settled,abonos:S.abonos,fixedUntil:S.fixedUntil,autoUntil:S.autoUntil,closed:S.closed,closedPct:S.closedPct}))}
+function clean(){return JSON.parse(JSON.stringify({n1:S.n1,n2:S.n2,pct:S.pct,pctSet:!!S.pctSet,items:S.items,pays:S.pays,settled:S.settled,abonos:S.abonos,fixedUntil:S.fixedUntil,autoUntil:S.autoUntil,closed:S.closed,closedPct:S.closedPct,oct2026SplitUpdate:!!S.oct2026SplitUpdate,oct2026UtilitiesSeeded:!!S.oct2026UtilitiesSeeded}))}
 function save(){
   try{localStorage.setItem("gastos-hogar",JSON.stringify(S))}catch(e){}
   if(DBR){(EX?DBR.update(clean()):DBR.set(clean()).then(()=>{EX=true})).catch(()=>{$("st").textContent="No se pudo guardar. Revisa tu conexión o tus permisos."})}
+}
+function applyOct2026SplitUpdate(state){
+  if(state.oct2026SplitUpdate)return false;
+  state.pct=55;state.pctSet=true;
+  if(!state.closed)state.closed={};if(!state.closedPct)state.closedPct={};
+  state.closed["2026-10"]=true;state.closedPct["2026-10"]=55;
+  state.oct2026SplitUpdate=true;
+  return true;
+}
+function applyOct2026Utilities(state){
+  if(state.oct2026UtilitiesSeeded)return false;
+  if(!state.pays)state.pays={};
+  const month="2026-10";
+  if(!state.pays[month])state.pays[month]={};
+  [["Luz",98.30],["Agua",15]].forEach(([name,amount])=>{
+    const item=(state.items||[]).find(i=>i.name.toLowerCase()===name.toLowerCase());
+    if(!item)return;
+    const existing=state.pays[month][item.id];
+    if(!existing||!(Number(existing.amt)>0))state.pays[month][item.id]={...(existing||{}),amt:amount,paid:true};
+    else if(Math.abs(Number(existing.amt)-amount)<0.005&&!existing.paid)existing.paid=true;
+  });
+  state.oct2026UtilitiesSeeded=true;
+  return true;
 }
 function removeDemoVouchers(state){
   let removed=false;
@@ -209,7 +252,9 @@ function removeDemoVouchers(state){
   return removed;
 }
 const demoRemovedLocally=removeDemoVouchers(S);
-if(demoRemovedLocally)save();
+const octUpdateAppliedLocally=applyOct2026SplitUpdate(S);
+const octBillsAppliedLocally=applyOct2026Utilities(S);
+if(demoRemovedLocally||octUpdateAppliedLocally||octBillsAppliedLocally)save();
 const f=n=>"S/ "+(Math.round(n*100)/100);
 const rng=(a,b)=>a===b?f(a):f(a)+" a "+f(b);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -226,6 +271,7 @@ function render(){
   const gMin=own.reduce((s,i)=>s+i.min,0),gMax=own.reduce((s,i)=>s+i.max,0);
   let real=0,paid=0;
   let pend=0;const falta=[];own.forEach(i=>{const p=pay(M,i.id);real+=p.amt||0;if(p.paid)paid+=p.amt||0;else if(!(isClosed(M)&&!p.amt)){pend+=p.amt>0?p.amt:(i.fixed&&M<=S.fixedUntil?i.min:0);falta.push(i.name)}});
+  $("mon").value=M;
   $("hl").textContent=mlabel(M);
   $("who").textContent="Servicios del mes, repartidos entre "+S.n1+" y "+S.n2+".";
   $("net").textContent=f(real);
@@ -234,7 +280,10 @@ function render(){
   $("pg").style.width=(paid+pend?paid/(paid+pend)*100:0)+"%";
   $("pgt").textContent="Pagado "+f(paid)+" de "+f(paid+pend);
   $("gross").textContent=lock?"Mes cerrado: todos los pagos realizados. No se puede editar.":(falta.length?"Mes abierto. Faltan por pagar: "+falta.join(", ")+".":"Todos los pagos están hechos. Ya puedes cerrar el mes.");
-  $("lockb").style.display=lock?"inline-block":"none";
+  const status=$("lockb");
+  status.textContent=lock?"Mes cerrado":"Mes abierto";
+  status.classList.toggle("closed",lock);status.classList.toggle("open",!lock);
+  status.style.display="inline-block";
   $("closeMonth").style.display=(!lock&&!falta.length&&real>0)?"inline-block":"none";
   $("list").innerHTML=it.map((i,k)=>{
     const col="var("+COLORS[k%5]+")";
@@ -306,6 +355,9 @@ $("list").addEventListener("change",onChange);
 $("est").addEventListener("change",onChange);
 $("est").addEventListener("click",e=>{const d=e.target.dataset.del;if(d===undefined)return;S.items.splice(+d,1);save();render()});
 $("mon").addEventListener("change",e=>{if(e.target.value){M=e.target.value;render()}});
+function shiftMonth(delta){const d=new Date(+M.slice(0,4),+M.slice(5,7)-1+delta,1);M=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");render()}
+$("prevMonth").addEventListener("click",()=>shiftMonth(-1));
+$("nextMonth").addEventListener("click",()=>shiftMonth(1));
 $("pct").addEventListener("input",e=>{S.pct=+e.target.value;S.pctSet=true;save();render()});
 $("abl").addEventListener("click",e=>{const k=e.target.dataset.ab;if(k===undefined||isClosed(M))return;S.abonos[M].splice(+k,1);save();render()});
 
@@ -411,10 +463,10 @@ render();
       if(snap.exists){
         EX=true;
         const o=JSON.parse(JSON.stringify(snap.data()));
-        if(!o.pays)o.pays={};if(!o.settled)o.settled={};if(!o.items)o.items=S.items;if(!o.abonos)o.abonos={};if(!o.fixedUntil)o.fixedUntil="2027-03";if(!o.autoUntil)o.autoUntil="2026-10";if(!o.closed)o.closed={};if(!o.closedPct)o.closedPct={};o.items.forEach(i=>{if((i.name==="Alquiler"||i.name==="Internet")&&i.fixed===undefined)i.fixed=true});const hadDemo=removeDemoVouchers(o);
+        if(!o.pays)o.pays={};if(!o.settled)o.settled={};if(!o.items)o.items=S.items;if(!o.abonos)o.abonos={};if(!o.fixedUntil)o.fixedUntil="2027-03";if(!o.autoUntil)o.autoUntil="2026-10";if(!o.closed)o.closed={};if(!o.closedPct)o.closedPct={};o.items.forEach(i=>{if((i.name==="Alquiler"||i.name==="Internet")&&i.fixed===undefined)i.fixed=true});const hadDemo=removeDemoVouchers(o),octUpdateApplied=applyOct2026SplitUpdate(o),octBillsApplied=applyOct2026Utilities(o);
         S=o;
         try{localStorage.setItem("gastos-hogar",JSON.stringify(S))}catch(e){}
-        if(hadDemo)ref.update(clean()).catch(()=>{$("st").textContent="No se pudo retirar el abono de prueba sincronizado."});
+        if(hadDemo||octUpdateApplied||octBillsApplied)ref.update(clean()).catch(()=>{$("st").textContent="No se pudo sincronizar los gastos de octubre."});
         if(document.activeElement!==$("n1"))$("n1").value=S.n1;
         if(document.activeElement!==$("n2"))$("n2").value=S.n2;
         $("st").textContent=OKT;render();
